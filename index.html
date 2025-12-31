@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中元信息登记表</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        .exchange-rate {
+            margin-top: 5px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .instructions h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        
+        th {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 12px 8px;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 10px 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 5px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .row-controls {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .amount-display {
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .rmb-display {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 3px;
+            text-align: center;
+        }
+        
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+        
+        .footer-note {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        .data-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .data-summary h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .server-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status-connected {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-connecting {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .config-panel {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6c757d;
+        }
+        
+        .config-panel h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .config-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .config-input input {
+            flex: 1;
+            min-width: 250px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .log-panel {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-panel h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .log-success {
+            color: #28a745;
+        }
+        
+        .log-error {
+            color: #dc3545;
+        }
+        
+        .log-info {
+            color: #17a2b8;
+        }
+        
+        .log-warning {
+            color: #ffc107;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .sync-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .actions, .footer-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+                font-size: 12px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>中元信息登记表</h1>
+            <p class="subtitle">请填写以下信息，支持本地保存与服务器同步</p>
+            <p class="exchange-rate">汇率: 1人民币 ≈ 4.2新台币</p>
+            <div id="serverStatus" class="server-status status-disconnected">
+                <i class="fas fa-server"></i> 服务器: 未连接
+            </div>
+        </header>
+        
+        <!-- 服务器配置面板 -->
+        <div class="config-panel" id="configPanel">
+            <h3><i class="fas fa-cog"></i> 服务器设置</h3>
+            <div class="config-input">
+                <input type="text" id="serverUrl" placeholder="服务器地址" value="">
+                <button id="testConnection" class="btn btn-warning">
+                    <i class="fas fa-plug"></i> 测试连接
+                </button>
+                <button id="showConfig" class="btn btn-info">
+                    <i class="fas fa-sliders-h"></i> 高级设置
+                </button>
+            </div>
+            <div id="connectionInfo" style="font-size: 12px; color: #6c757d;"></div>
+        </div>
+        
+        <!-- 操作日志面板 -->
+        <div class="log-panel" id="logPanel">
+            <h4><i class="fas fa-clipboard-list"></i> 操作日志</h4>
+            <div id="logContent">
+                <div class="log-entry log-info">系统初始化完成</div>
+                <div class="log-entry log-info">等待连接服务器...</div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+            <ol>
+                <li>填写姓名并选择护持项目后，系统会自动填充对应的超荐方式和护持金额</li>
+                <li>点击"+"按钮可以添加新行，点击"×"按钮可以删除当前行</li>
+                <li>填写超荐内容后，可以保存数据到本地浏览器或提交到服务器</li>
+                <li>新台币与人民币的汇率按4.2:1计算</li>
+                <li>首次使用请配置服务器地址，然后点击"测试连接"</li>
+                <li>点击"查看管理后台"可以查看所有数据、导出报表和进行数据管理</li>
+            </ol>
+        </div>
+        
+        <div class="actions">
+            <button id="addRow" class="btn btn-primary">
+                <i class="fas fa-plus"></i> 添加新行
+            </button>
+            <button id="saveData" class="btn btn-success">
+                <i class="fas fa-save"></i> 保存数据到本地
+            </button>
+            <button id="syncData" class="btn btn-info" disabled>
+                <i class="fas fa-sync-alt"></i> 同步到服务器
+            </button>
+          <button id="debugData" class="btn btn-info">
+        <i class="fas fa-bug"></i> 调试数据
+            </button>
+        </div>
+        
+        <!-- 数据表格部分 -->
+        <div class="table-container">
+            <table id="registrationTable">
+                <thead>
+                    <tr>
+                        <th width="4%">序号</th>
+                        <th width="10%">姓名</th>
+                        <th width="15%">护持项目</th>
+                        <th width="22%">超荐方式</th>
+                        <th width="12%">护持金额<br>(新台币)<br>≈人民币</th>
+                        <th width="15%">超荐内容</th>
+                        <th width="8%">是否缴费</th>
+                        <th width="10%">联系人</th>
+                        <th width="4%">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 数据行将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer-actions">
+            <button id="exportCSV" class="btn btn-secondary">
+                <i class="fas fa-file-csv"></i> 导出为CSV文件
+            </button>
+            <button id="loadData" class="btn btn-secondary">
+                <i class="fas fa-folder-open"></i> 加载本地数据
+            </button>
+            <button id="submitAll" class="btn btn-warning" disabled>
+                <i class="fas fa-cloud-upload-alt"></i> 提交所有数据到服务器
+            </button>
+            <button id="clearAll" class="btn btn-danger">
+                <i class="fas fa-trash"></i> 清空所有数据
+            </button>
+        </div>
+        
+        <div class="data-summary">
+            <h4><i class="fas fa-chart-bar"></i> 数据统计</h4>
+            <p>总记录数: <span id="totalRecords">0</span> 条</p>
+            <p>总护持金额(新台币): <span id="totalAmountTWD">0</span></p>
+            <p>总护持金额(人民币): <span id="totalAmountRMB">0</span></p>
+            <p>服务器同步状态: <span id="syncStatus">未同步</span></p>
+            <div id="syncDetails" class="sync-status"></div>
+        </div>
+    </div>
+    
+    <!-- 配置模态框 -->
+    <div id="configModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div style="background-color: white; margin: 10% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="font-size: 20px; color: #2c3e50;"><i class="fas fa-cogs"></i> 高级配置</div>
+                <div style="font-size: 24px; cursor: pointer; color: #7f8c8d;" id="closeModal">&times;</div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label>API端点配置:</label>
+                    <input type="text" id="apiSubmit" class="form-control" placeholder="提交数据API端点" value="/api/records">
+                    <small>用于提交数据的API路径</small>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>请求超时时间(秒):</label>
+                    <input type="number" id="timeout" class="form-control" placeholder="请求超时时间" value="30" min="5" max="120">
+                </div>
+                <div>
+                    <label>请求重试次数:</label>
+                    <input type="number" id="retryCount" class="form-control" placeholder="重试次数" value="3" min="0" max="10">
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <button id="saveConfig" class="btn btn-success">保存配置</button>
+                <button id="cancelConfig" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 汇率设置
+        const EXCHANGE_RATE = 4.2;
+        
+        // 中元超荐项目数据定义
+        const projectData = {
+            "副总功德主": {
+                method: "超荐消业共修(七天)-莲位-附 超荐莲位 贰座",
+                amount: "80000"
+            },
+            "大愿功德主": {
+                method: "超荐消业共修(七天)-莲位-附 超荐莲位 壹座",
+                amount: "50000"
+            },
+            "大悲功德主(历代祖先)": {
+                method: "超荐消业共修(七天)-莲位-历代祖先",
+                amount: "8000"
+            },
+            "大悲功德主(往生先亡)": {
+                method: "超荐消业共修(七天)-莲位-往生先亡",
+                amount: "6000"
+            },
+            "大悲功德主(个人冤亲债主)": {
+                method: "超荐消业共修(七天)-莲位-个人冤亲债主",
+                amount: "6000"
+            },
+            "大悲功德主(地基主)": {
+                method: "超荐消业共修(七天)-莲位-地基主",
+                amount: "6000"
+            },
+            "大悲功德主(有缘无份小孩)": {
+                method: "超荐消业共修(七天)-莲位-有缘无份小孩",
+                amount: "6000"
+            },
+            "大智功德主": {
+                method: "超荐消业共修(五天)-地基主",
+                amount: "1000"
+            },
+            "大行功德主": {
+                method: "超荐消业共修(五天)-有缘无份小孩",
+                amount: "1000"
+            },
+            "随喜超荐(历代祖先)": {
+                method: "超荐消业共修(三天)-历代祖先",
+                amount: "200"
+            },
+            "随喜超荐(往生先亡)": {
+                method: "超荐消业共修(三天)-往生先亡",
+                amount: "200"
+            },
+            "随喜超荐(个人冤亲债主)": {
+                method: "超荐消业共修(三天)-个人冤亲债主",
+                amount: "200"
+            }
+        };
+        
+        // 服务器配置
+        let serverConfig = {
+            serverUrl: window.location.origin,
+            apiEndpoints: {
+                submit: '/api/records',
+                test: '/api/test',
+                stats: '/api/stats'
+            },
+            timeout: 30,
+            retryCount: 3
+        };
+        
+        // 服务器状态
+        let serverConnected = false;
+        let syncInProgress = false;
+        
+        // 操作日志
+        let operationLogs = [];
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            initializeTable();
+            updateSummary();
+            setupEventListeners();
+            testServerConnection();
+        });
+        
+        // 加载配置
+        function loadConfig() {
+            const savedConfig = localStorage.getItem('zhongyuanServerConfig');
+            if (savedConfig) {
+                try {
+                    const parsedConfig = JSON.parse(savedConfig);
+                    serverConfig = { ...serverConfig, ...parsedConfig };
+                    document.getElementById('serverUrl').value = serverConfig.serverUrl;
+                    document.getElementById('apiSubmit').value = serverConfig.apiEndpoints.submit || '/api/records';
+                    document.getElementById('timeout').value = serverConfig.timeout || 30;
+                    document.getElementById('retryCount').value = serverConfig.retryCount || 3;
+                    
+                    addLog('配置已从本地存储加载', 'info');
+                } catch (e) {
+                    addLog('加载配置时出错，使用默认配置', 'error');
+                }
+            }
+        }
+        
+        // 保存配置
+        function saveConfig() {
+            serverConfig.serverUrl = document.getElementById('serverUrl').value.trim();
+            serverConfig.apiEndpoints.submit = document.getElementById('apiSubmit').value.trim() || '/api/records';
+            serverConfig.timeout = parseInt(document.getElementById('timeout').value) || 30;
+            serverConfig.retryCount = parseInt(document.getElementById('retryCount').value) || 3;
+            
+            try {
+                localStorage.setItem('zhongyuanServerConfig', JSON.stringify(serverConfig));
+                addLog('配置已保存', 'success');
+            } catch (e) {
+                addLog('保存配置时出错: ' + e.message, 'error');
+            }
+            
+            hideModal();
+            
+            // 重新测试连接
+            testServerConnection();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 原有按钮事件
+            document.getElementById('addRow').addEventListener('click', addNewRow);
+            document.getElementById('saveData').addEventListener('click', saveToLocalStorage);
+            document.getElementById('exportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('loadData').addEventListener('click', loadFromLocalStorage);
+            document.getElementById('clearAll').addEventListener('click', clearAllData);
+  
+            
+            // 新增服务器相关事件
+            document.getElementById('testConnection').addEventListener('click', testServerConnection);
+            document.getElementById('syncData').addEventListener('click', syncToServer);
+            document.getElementById('submitAll').addEventListener('click', submitAllToServer);
+            document.getElementById('showConfig').addEventListener('click', showModal);
+            document.getElementById('saveConfig').addEventListener('click', saveConfig);
+            document.getElementById('closeModal').addEventListener('click', hideModal);
+            document.getElementById('cancelConfig').addEventListener('click', hideModal);
+            document.getElementById('debugData').addEventListener('click', debugData);
+
+            function debugData() {
+              const allData = getAllData();
+              console.log('🔍 调试数据:', allData);
+              
+              // 显示数据详情
+              let debugInfo = `共 ${allData.length} 条数据\n\n`;
+              allData.forEach((item, index) => {
+                debugInfo += `数据 ${index + 1}:\n`;
+                debugInfo += `  姓名: ${item.name}\n`;
+                debugInfo += `  项目: ${item.project}\n`;
+                debugInfo += `  金额TWD: ${item.amountTWD} (类型: ${typeof item.amountTWD})\n`;
+                debugInfo += `  金额RMB: ${item.amountRMB} (类型: ${typeof item.amountRMB})\n`;
+                debugInfo += `  localId: ${item.localId}\n\n`;
+              });
+              
+              alert(debugInfo);
+            }
+            // 点击模态框外部关闭
+            document.getElementById('configModal').addEventListener('click', function(e) {
+                if (e.target === this) hideModal();
+            });
+        }
+        
+        // 显示模态框
+        function showModal() {
+            document.getElementById('configModal').style.display = 'block';
+        }
+        
+        // 隐藏模态框
+        function hideModal() {
+            document.getElementById('configModal').style.display = 'none';
+        }
+        
+        // 添加日志
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = {
+                timestamp,
+                message,
+                type
+            };
+            
+            operationLogs.unshift(logEntry);
+            if (operationLogs.length > 50) operationLogs.pop();
+            
+            // 更新显示
+            updateLogDisplay();
+        }
+        
+        // 更新日志显示
+        function updateLogDisplay() {
+            const logContent = document.getElementById('logContent');
+            logContent.innerHTML = '';
+            
+            operationLogs.forEach(log => {
+                const logDiv = document.createElement('div');
+                logDiv.className = `log-entry log-${log.type}`;
+                logDiv.textContent = `[${log.timestamp}] ${log.message}`;
+                logContent.appendChild(logDiv);
+            });
+        }
+        
+        // 测试服务器连接
+        async function testServerConnection() {
+            const serverUrl = document.getElementById('serverUrl').value.trim();
+            if (!serverUrl) {
+                addLog('请输入服务器地址', 'error');
+                return;
+            }
+            
+            updateServerStatus('connecting', '连接中...');
+            addLog(`正在连接到服务器: ${serverUrl}`, 'info');
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
+            
+            try {
+                const response = await fetch(`${serverUrl}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    serverConnected = true;
+                    updateServerStatus('connected', `已连接 (${data.status || '健康'})`);
+                    enableServerButtons();
+                    addLog('服务器连接成功', 'success');
+                    
+                    document.getElementById('connectionInfo').innerHTML = 
+                        `<i class="fas fa-check-circle"></i> 连接正常 | 服务器状态: ${data.status || '健康'}`;
+                    
+                    // 保存配置
+                    localStorage.setItem('zhongyuanServerConfig', JSON.stringify(serverConfig));
+                    
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                serverConnected = false;
+                updateServerStatus('disconnected', `连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`);
+                disableServerButtons();
+                addLog(`服务器连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
+                
+                document.getElementById('connectionInfo').innerHTML = 
+                    `<i class="fas fa-times-circle"></i> 连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`;
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+        
+        // 更新服务器状态显示
+        function updateServerStatus(status, message) {
+            const statusElement = document.getElementById('serverStatus');
+            statusElement.className = `server-status status-${status}`;
+            
+            const icon = status === 'connected' ? 'fa-check-circle' : 
+                        status === 'connecting' ? 'fa-sync fa-spin' : 'fa-times-circle';
+            
+            statusElement.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        }
+        
+        // 启用服务器相关按钮
+        function enableServerButtons() {
+            document.getElementById('syncData').disabled = false;
+            document.getElementById('submitAll').disabled = false;
+            document.getElementById('syncData').innerHTML = '<i class="fas fa-sync-alt"></i> 同步到服务器';
+        }
+        
+        // 禁用服务器相关按钮
+        function disableServerButtons() {
+            document.getElementById('syncData').disabled = true;
+            document.getElementById('submitAll').disabled = true;
+        }
+        
+        // 同步数据到服务器
+        async function syncToServer() {
+            if (!serverConnected) {
+                addLog('服务器未连接，无法同步', 'error');
+                return;
+            }
+            
+            if (syncInProgress) {
+                addLog('已有同步操作在进行中', 'warning');
+                return;
+            }
+            
+            syncInProgress = true;
+            document.getElementById('syncData').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 同步中...';
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
+            
+            try {
+                const allData = getAllData();
+                if (allData.length === 0) {
+                    addLog('没有需要同步的数据', 'info');
+                    updateSyncDetails('暂无数据可同步');
+                    return;
+                }
+                
+                const submittedIds = JSON.parse(localStorage.getItem('submittedIds') || '[]');
+                const dataToSubmit = allData.filter(item => !submittedIds.includes(item.localId));
+                
+                if (dataToSubmit.length === 0) {
+                    addLog('所有数据已同步，无需重复提交', 'info');
+                    updateSyncDetails('所有数据已同步');
+                    return;
+                }
+                
+                addLog(`准备提交 ${dataToSubmit.length} 条未同步数据`, 'info');
+                updateSyncDetails(`准备同步 ${dataToSubmit.length} 条数据...`);
+                
+                const result = await submitDataToServer(dataToSubmit, controller);
+                
+                if (result && result.success) {
+                    const newIds = dataToSubmit.map(item => item.localId);
+                    const updatedSubmittedIds = [...submittedIds, ...newIds];
+                    localStorage.setItem('submittedIds', JSON.stringify(updatedSubmittedIds));
+                    
+                    updateSyncStatus(`${result.submittedCount || dataToSubmit.length}条数据已同步`);
+                    updateSyncDetails(`成功同步 ${result.submittedCount || dataToSubmit.length} 条数据到服务器`, 'success');
+                    addLog(`成功同步 ${result.submittedCount || dataToSubmit.length} 条数据到服务器`, 'success');
+                    
+                    if (result.failedCount > 0) {
+                        addLog(`${result.failedCount} 条数据同步失败，请检查`, 'error');
+                        updateSyncDetails(`${result.failedCount} 条数据同步失败`, 'error');
+                    }
+                } else {
+                    throw new Error(result?.message || '同步失败，服务器返回异常');
+                }
+                
+            } catch (error) {
+                addLog(`同步失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
+                updateSyncStatus('同步失败');
+                updateSyncDetails(`同步失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
+            } finally {
+                syncInProgress = false;
+                clearTimeout(timeoutId);
+                document.getElementById('syncData').innerHTML = '<i class="fas fa-sync-alt"></i> 同步到服务器';
+            }
+        }
+        
+        // 提交所有数据到服务器
+        async function submitAllToServer() {
+            if (!serverConnected) {
+                addLog('服务器未连接，无法提交', 'error');
+                return;
+            }
+            
+            if (!confirm('确定要提交所有数据到服务器吗？这将会覆盖服务器上的现有数据。')) {
+                return;
+            }
+            
+            syncInProgress = true;
+            document.getElementById('submitAll').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
+            
+            try {
+                const allData = getAllData();
+                if (allData.length === 0) {
+                    addLog('没有数据可提交', 'info');
+                    updateSyncDetails('暂无数据可提交');
+                    return;
+                }
+                
+                addLog(`准备提交全部 ${allData.length} 条数据`, 'info');
+                updateSyncDetails(`准备提交 ${allData.length} 条数据...`);
+                
+                const result = await submitBatchToServer(allData, controller);
+                
+                if (result && result.success) {
+                    const submittedIds = allData.map(item => item.localId);
+                    localStorage.setItem('submittedIds', JSON.stringify(submittedIds));
+                    
+                    updateSyncStatus(`已提交${result.submittedCount || allData.length}条数据`);
+                    updateSyncDetails(`成功提交 ${result.submittedCount || allData.length} 条数据到服务器`, 'success');
+                    addLog(`成功提交 ${result.submittedCount || allData.length} 条数据到服务器`, 'success');
+                    
+                    if (result.failedCount > 0) {
+                        addLog(`${result.failedCount} 条数据提交失败`, 'error');
+                        updateSyncDetails(`${result.failedCount} 条数据提交失败`, 'error');
+                    }
+                } else {
+                    throw new Error(result?.message || '提交失败，服务器返回异常');
+                }
+                
+            } catch (error) {
+                addLog(`提交失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
+                updateSyncStatus('提交失败');
+                updateSyncDetails(`提交失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
+            } finally {
+                syncInProgress = false;
+                clearTimeout(timeoutId);
+                document.getElementById('submitAll').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> 提交所有数据到服务器';
+            }
+        }
+        
+        // 提交数据到服务器
+        async function submitDataToServer(data, controller) {
+            const serverUrl = serverConfig.serverUrl;
+            const apiEndpoint = serverConfig.apiEndpoints.submit;
+            const url = `${serverUrl}${apiEndpoint}`;
+            
+            try {
+                const dataWithMetadata = data.map(item => ({
+                    ...item,
+                    localId: item.localId || generateLocalId(),
+                    submitTime: new Date().toISOString(),
+                    deviceId: getDeviceId(),
+                    syncVersion: '1.0'
+                }));
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data: dataWithMetadata,
+                        batchId: generateBatchId(),
+                        timestamp: new Date().toISOString(),
+                        deviceId: getDeviceId()
+                    }),
+                    signal: controller ? controller.signal : null
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+                
+            } catch (error) {
+                // 重试逻辑
+                for (let i = 0; i < (serverConfig.retryCount || 3); i++) {
+                    addLog(`第${i + 1}次重试...`, 'info');
+                    try {
+                        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+                        
+                        const retryController = new AbortController();
+                        const retryTimeoutId = setTimeout(() => retryController.abort(), (serverConfig.timeout || 30) * 1000);
+                        
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                data, 
+                                batchId: generateBatchId(),
+                                retryAttempt: i + 1 
+                            }),
+                            signal: retryController.signal
+                        });
+                        
+                        clearTimeout(retryTimeoutId);
+                        
+                        if (response.ok) {
+                            return await response.json();
+                        }
+                    } catch (retryError) {
+                        if (i === (serverConfig.retryCount || 3) - 1) {
+                            throw error;
+                        }
+                    }
+                }
+                throw error;
+            }
+        }
+        
+        // 批量提交数据
+        async function submitBatchToServer(data, controller) {
+            return submitDataToServer(data, controller);
+        }
+        
+        // 获取所有表格数据
+        function getAllData() {
+            const tableData = [];
+            const rows = document.querySelectorAll('#tableBody tr');
+            
+            rows.forEach((row, index) => {
+                const name = row.querySelector('.name-input').value.trim();
+                const project = row.querySelector('.project-select').value;
+                const method = row.querySelector('.method-textarea').value;
+                const amount = row.querySelector('.amount-display').textContent;
+                const content = row.querySelector('.content-textarea').value.trim();
+                const payment = row.querySelector('.payment-select').value;
+                const contact = row.querySelector('.contact-input').value.trim();
+                
+                if (name && project) {
+                    tableData.push({
+                        name,
+                        project,
+                        method,
+                        content,
+                        payment,
+                        contact,
+                        amountTWD: extractAmountTWD(amount),
+                        amountRMB: extractAmountRMB(amount),
+                        localId: generateLocalIdForRow(row, index),
+                        createTime: new Date().toISOString(),
+                        rowIndex: index + 1
+                    });
+                }
+            });
+            
+            return tableData;
+        }
+        
+        // 从金额字符串中提取新台币数值
+        function extractAmountTWD(amountStr) {
+            if (amountStr === '随喜' || amountStr === '-') return 0;
+            const match = amountStr.match(/NT\$\s*([\d,]+)/);
+            return match ? parseInt(match[1].replace(/,/g, '')) : 0;
+        }
+        
+        // 从金额字符串中提取人民币数值
+        function extractAmountRMB(amountStr) {
+            if (amountStr === '随喜' || amountStr === '-') return 0;
+            const match = amountStr.match(/¥\s*([\d,.]+)/);
+            if (match) {
+                return parseFloat(match[1].replace(/,/g, ''));
+            }
+            const twdMatch = amountStr.match(/NT\$\s*([\d,.]+)/);
+            if (twdMatch) {
+                const twdAmount = parseInt(twdMatch[1].replace(/,/g, ''));
+                return twdAmount / EXCHANGE_RATE;
+            }
+            return 0;
+        }
+        
+        // 为行生成本地ID
+        function generateLocalIdForRow(row, index) {
+            const name = row.querySelector('.name-input').value.trim();
+            const project = row.querySelector('.project-select').value;
+            const timestamp = new Date().getTime();
+            const namePart = name ? name.substring(0, 3) : 'noname';
+            const projectPart = project ? project.substring(0, 5) : 'noproj';
+            return `local_${timestamp}_${index}_${namePart}_${projectPart}`.replace(/\s+/g, '_');
+        }
+        
+        // 生成本地ID
+        function generateLocalId() {
+            return `local_${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+        
+        // 生成批次ID
+        function generateBatchId() {
+            return `batch_${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+        
+        // 获取设备ID
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('deviceId');
+            if (!deviceId) {
+                deviceId = `device_${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
+                localStorage.setItem('deviceId', deviceId);
+            }
+            return deviceId;
+        }
+        
+        // 更新同步状态显示
+        function updateSyncStatus(status) {
+            document.getElementById('syncStatus').textContent = status;
+        }
+        
+        // 更新同步详情
+        function updateSyncDetails(message, type = 'info') {
+            const detailsElement = document.getElementById('syncDetails');
+            detailsElement.textContent = message;
+            detailsElement.className = `sync-status log-${type}`;
+        }
+        
+        // 初始化表格
+        function initializeTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            addNewRow();
+            addLog('表格初始化完成', 'info');
+        }
+        
+        // 添加新行
+        function addNewRow() {
+            const tableBody = document.getElementById('tableBody');
+            const rowCount = tableBody.children.length + 1;
+            
+            // 生成项目选项
+            const projectOptions = Object.keys(projectData).map(project => 
+                `<option value="${project}">${project}</option>`
+            ).join('');
+            
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${rowCount}</td>
+                <td>
+                    <input type="text" class="form-control name-input" placeholder="请输入姓名">
+                </td>
+                <td>
+                    <select class="form-control project-select">
+                        <option value="">请选择护持项目</option>
+                        ${projectOptions}
+                    </select>
+                </td>
+                <td>
+                    <textarea class="form-control method-textarea" rows="3" readonly></textarea>
+                </td>
+                <td>
+                    <div class="amount-display">-</div>
+                    <div class="rmb-display">-</div>
+                </td>
+                <td>
+                    <textarea class="form-control content-textarea" rows="3" placeholder="请输入超荐内容"></textarea>
+                </td>
+                <td>
+                    <select class="form-control payment-select">
+                        <option value="未缴费">未缴费</option>
+                        <option value="已缴费">已缴费</option>
+                        <option value="随喜">随喜</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control contact-input" placeholder="请输入联系人">
+                </td>
+                <td>
+                    <div class="row-controls">
+                        <button class="btn btn-danger btn-sm delete-row" title="删除此行">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            tableBody.appendChild(newRow);
+            
+            // 绑定新行的事件
+            const projectSelect = newRow.querySelector('.project-select');
+            const deleteBtn = newRow.querySelector('.delete-row');
+            
+            projectSelect.addEventListener('change', function() {
+                updateRowData(this);
+            });
+            
+            deleteBtn.addEventListener('click', function() {
+                deleteRow(this);
+            });
+            
+            // 添加输入事件监听，实时更新统计
+            const nameInput = newRow.querySelector('.name-input');
+            nameInput.addEventListener('input', updateSummary);
+            
+            // 更新序号
+            updateRowNumbers();
+            updateSummary();
+            addLog(`添加了新行 (当前共${rowCount}行)`, 'info');
+        }
+        
+        // 更新行数据
+        function updateRowData(selectElement) {
+            const row = selectElement.closest('tr');
+            const project = selectElement.value;
+            
+            if (project && projectData[project]) {
+                const methodTextarea = row.querySelector('.method-textarea');
+                const amountDisplay = row.querySelector('.amount-display');
+                const rmbDisplay = row.querySelector('.rmb-display');
+                
+                // 更新超荐方式
+                methodTextarea.value = projectData[project].method;
+                
+                // 更新金额显示
+                if (projectData[project].amount === "随喜") {
+                    amountDisplay.textContent = "随喜";
+                    rmbDisplay.textContent = "随喜";
+                } else {
+                    const amountTWD = parseInt(projectData[project].amount);
+                    const amountRMB = amountTWD / EXCHANGE_RATE;
+                    
+                    amountDisplay.textContent = `NT$ ${amountTWD.toLocaleString()}`;
+                    rmbDisplay.textContent = `≈ ¥ ${amountRMB.toLocaleString('zh-CN', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+                }
+                
+                addLog(`已选择项目: ${project}`, 'info');
+            } else {
+                // 清空数据
+                row.querySelector('.method-textarea').value = '';
+                row.querySelector('.amount-display').textContent = '-';
+                row.querySelector('.rmb-display').textContent = '-';
+            }
+            
+            updateSummary();
+        }
+        
+        // 删除行
+        function deleteRow(buttonElement) {
+            const row = buttonElement.closest('tr');
+            const tableBody = document.getElementById('tableBody');
+            
+            if (tableBody.children.length > 1) {
+                row.remove();
+                updateRowNumbers();
+                updateSummary();
+                addLog('删除了一行数据', 'info');
+            } else {
+                alert("表格至少需要保留一行！");
+                addLog('尝试删除最后一行被阻止', 'warning');
+            }
+        }
+        
+        // 更新行号
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach((row, index) => {
+                row.querySelector('td:first-child').textContent = index + 1;
+            });
+        }
+        
+        // 更新数据统计
+        function updateSummary() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let totalRecords = 0;
+            let totalAmountTWD = 0;
+            
+            rows.forEach(row => {
+                const projectSelect = row.querySelector('.project-select');
+                const nameInput = row.querySelector('.name-input');
+                
+                if (nameInput.value.trim() && projectSelect.value) {
+                    totalRecords++;
+                    
+                    const project = projectSelect.value;
+                    if (projectData[project] && projectData[project].amount !== "随喜") {
+                        totalAmountTWD += parseInt(projectData[project].amount);
+                    }
+                }
+            });
+            
+            document.getElementById('totalRecords').textContent = totalRecords;
+            document.getElementById('totalAmountTWD').textContent = `NT$ ${totalAmountTWD.toLocaleString()}`;
+            document.getElementById('totalAmountRMB').textContent = `¥ ${(totalAmountTWD / EXCHANGE_RATE).toLocaleString('zh-CN', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+        }
+        
+        // 保存数据到本地存储
+        function saveToLocalStorage() {
+            const tableData = getAllData();
+            
+            if (tableData.length === 0) {
+                alert('没有有效数据可以保存！请至少填写一行完整的姓名和护持项目。');
+                addLog('保存失败：无有效数据', 'error');
+                return;
+            }
+            
+            try {
+                localStorage.setItem('zhongyuanData', JSON.stringify(tableData));
+                const msg = `成功保存 ${tableData.length} 条记录到本地存储！`;
+                alert(msg);
+                addLog(msg, 'success');
+            } catch (e) {
+                const errorMsg = '保存数据失败，可能存储空间不足：' + e.message;
+                alert(errorMsg);
+                addLog(errorMsg, 'error');
+            }
+        }
+        
+        // 从本地存储加载数据
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('zhongyuanData');
+            
+            if (!savedData) {
+                alert('本地存储中没有找到保存的数据！');
+                addLog('加载失败：本地无保存的数据', 'error');
+                return;
+            }
+            
+            if (!confirm('加载本地数据将替换当前表格中的所有数据，确定要加载吗？')) {
+                return;
+            }
+            
+            try {
+                const tableData = JSON.parse(savedData);
+                const tableBody = document.getElementById('tableBody');
+                
+                tableBody.innerHTML = '';
+                
+                tableData.forEach((item, index) => {
+                    addNewRow();
+                    const newRow = tableBody.lastElementChild;
+                    populateRow(newRow, item);
+                });
+                
+                updateRowNumbers();
+                updateSummary();
+                const msg = `成功加载 ${tableData.length} 条记录！`;
+                alert(msg);
+                addLog(msg, 'success');
+            } catch (e) {
+                const errorMsg = '加载数据失败，数据可能已损坏：' + e.message;
+                alert(errorMsg);
+                addLog(errorMsg, 'error');
+            }
+        }
+        
+        // 填充行数据
+        function populateRow(row, data) {
+            if (data.name) row.querySelector('.name-input').value = data.name;
+            
+            const projectSelect = row.querySelector('.project-select');
+            if (data.project) {
+                projectSelect.value = data.project;
+                
+                const event = new Event('change');
+                projectSelect.dispatchEvent(event);
+            }
+            
+            if (data.content) row.querySelector('.content-textarea').value = data.content;
+            if (data.payment) row.querySelector('.payment-select').value = data.payment;
+            if (data.contact) row.querySelector('.contact-input').value = data.contact;
+        }
+        
+        // 导出为CSV文件
+        function exportToCSV() {
+            const tableData = getAllData();
+            
+            if (tableData.length === 0) {
+                alert('没有有效数据可以导出！请至少填写一行完整的姓名和护持项目。');
+                addLog('导出失败：无有效数据', 'error');
+                return;
+            }
+            
+            try {
+                let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+                csvContent += "序号,姓名,护持项目,超荐方式,护持金额(新台币),护持金额(人民币),超荐内容,是否缴费,联系人,创建时间,本地ID\n";
+                
+                tableData.forEach(item => {
+                    const row = [
+                        `"${item.rowIndex}"`,
+                        `"${item.name}"`,
+                        `"${item.project}"`,
+                        `"${item.method.replace(/\n/g, '; ')}"`,
+                        `"${item.amountTWD}"`,
+                        `"${item.amountRMB.toFixed(2)}"`,
+                        `"${item.content}"`,
+                        `"${item.payment}"`,
+                        `"${item.contact}"`,
+                        `"${item.createTime}"`,
+                        `"${item.localId}"`
+                    ];
+                    csvContent += row.join(',') + "\n";
+                });
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                const timestamp = new Date().toISOString().slice(0,10).replace(/-/g, '');
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `中元信息登记表_${timestamp}_${tableData.length}条.csv`);
+                document.body.appendChild(link);
+                
+                link.click();
+                document.body.removeChild(link);
+                
+                const msg = `成功导出 ${tableData.length} 条记录到CSV文件！`;
+                alert(msg);
+                addLog(msg, 'success');
+            } catch (e) {
+                const errorMsg = '导出CSV文件失败：' + e.message;
+                alert(errorMsg);
+                addLog(errorMsg, 'error');
+            }
+        }
+        
+        // 清空所有数据
+        function clearAllData() {
+            if (!confirm('确定要清空所有数据吗？此操作不可撤销。')) {
+                return;
+            }
+            
+            localStorage.removeItem('zhongyuanData');
+            localStorage.removeItem('submittedIds');
+            
+            initializeTable();
+            updateSummary();
+            updateSyncStatus('未同步');
+            updateSyncDetails('');
+            
+            const msg = '所有数据已清空！';
+            alert(msg);
+            addLog(msg, 'info');
+        }
+    </script>
+</body>
+</html>
