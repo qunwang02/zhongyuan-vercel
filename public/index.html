@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中元信息登记表</title>
+    <title>护持项目收集表</title>
     <style>
         * {
             box-sizing: border-box;
@@ -20,7 +21,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             background-color: white;
             border-radius: 10px;
@@ -65,25 +66,15 @@
             margin-bottom: 10px;
         }
         
-        .instructions ol {
-            margin-left: 20px;
-        }
-        
-        .instructions li {
-            margin-bottom: 5px;
-        }
-        
         .table-container {
             overflow-x: auto;
             margin-bottom: 30px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 0;
+            margin-bottom: 20px;
         }
         
         th {
@@ -201,14 +192,16 @@
         .amount-display {
             font-weight: bold;
             color: #2c3e50;
-            text-align: center;
         }
         
         .rmb-display {
             color: #e74c3c;
             font-size: 0.9em;
             margin-top: 3px;
-            text-align: center;
+        }
+        
+        .project-option {
+            white-space: nowrap;
         }
         
         .footer-actions {
@@ -238,6 +231,34 @@
         .data-summary h4 {
             color: #2c3e50;
             margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .actions, .footer-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+                font-size: 14px;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+        }
+        
+        .hidden {
+            display: none;
         }
         
         .server-status {
@@ -312,6 +333,57 @@
             background-color: #138496;
         }
         
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            color: #2c3e50;
+        }
+        
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .close-modal:hover {
+            color: #e74c3c;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            text-align: right;
+        }
+        
         .log-panel {
             background-color: #f8f9fa;
             padding: 15px;
@@ -350,9 +422,14 @@
             color: #ffc107;
         }
         
-        textarea {
+        textarea.method-textarea {
             resize: vertical;
-            min-height: 60px;
+            min-height: 80px;
+        }
+        
+        textarea.content-textarea {
+            resize: vertical;
+            min-height: 80px;
         }
         
         .sync-status {
@@ -362,51 +439,13 @@
             text-align: center;
             font-size: 14px;
         }
-        
-        .progress-bar {
-            height: 20px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background-color: #28a745;
-            transition: width 0.3s ease;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .actions, .footer-actions {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-            
-            th, td {
-                padding: 8px 5px;
-                font-size: 12px;
-            }
-            
-            table {
-                font-size: 12px;
-            }
-        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>中元信息登记表</h1>
+            <h1>护持项目收集表</h1>
             <p class="subtitle">请填写以下信息，支持本地保存与服务器同步</p>
             <p class="exchange-rate">汇率: 1人民币 ≈ 4.2新台币</p>
             <div id="serverStatus" class="server-status status-disconnected">
@@ -418,7 +457,7 @@
         <div class="config-panel" id="configPanel">
             <h3><i class="fas fa-cog"></i> 服务器设置</h3>
             <div class="config-input">
-                <input type="text" id="serverUrl" placeholder="服务器地址" value="">
+                <input type="text" id="serverUrl" placeholder="服务器地址 (例如: https://donation-collection-system.onrender.com)">
                 <button id="testConnection" class="btn btn-warning">
                     <i class="fas fa-plug"></i> 测试连接
                 </button>
@@ -440,14 +479,11 @@
         
         <div class="instructions">
             <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
-            <ol>
-                <li>填写姓名并选择护持项目后，系统会自动填充对应的超荐方式和护持金额</li>
-                <li>点击"+"按钮可以添加新行，点击"×"按钮可以删除当前行</li>
-                <li>填写超荐内容后，可以保存数据到本地浏览器或提交到服务器</li>
-                <li>新台币与人民币的汇率按4.2:1计算</li>
-                <li>首次使用请配置服务器地址，然后点击"测试连接"</li>
-                <li>点击"查看管理后台"可以查看所有数据、导出报表和进行数据管理</li>
-            </ol>
+            <p>1. 填写姓名并选择护持项目后，系统会自动填充对应的祈福方式和护持金额</p>
+            <p>2. 点击"+"按钮可以添加新行，点击"×"按钮可以删除当前行</p>
+            <p>3. 填写祈福内容后，可以保存数据到本地浏览器或提交到服务器</p>
+            <p>4. 新台币与人民币的汇率按4.2:1计算</p>
+            <p>5. 首次使用请配置服务器地址，然后点击"测试连接"</p>
         </div>
         
         <div class="actions">
@@ -460,25 +496,22 @@
             <button id="syncData" class="btn btn-info" disabled>
                 <i class="fas fa-sync-alt"></i> 同步到服务器
             </button>
-          <button id="debugData" class="btn btn-info">
-        <i class="fas fa-bug"></i> 调试数据
-            </button>
         </div>
         
         <!-- 数据表格部分 -->
         <div class="table-container">
-            <table id="registrationTable">
+            <table id="donationTable">
                 <thead>
                     <tr>
-                        <th width="4%">序号</th>
-                        <th width="10%">姓名</th>
-                        <th width="15%">护持项目</th>
-                        <th width="22%">超荐方式</th>
+                        <th width="5%">序号</th>
+                        <th width="12%">姓名</th>
+                        <th width="18%">护持项目</th>
+                        <th width="22%">祈福方式</th>
                         <th width="12%">护持金额<br>(新台币)<br>≈人民币</th>
-                        <th width="15%">超荐内容</th>
+                        <th width="15%">祈福内容</th>
                         <th width="8%">是否缴费</th>
                         <th width="10%">联系人</th>
-                        <th width="4%">操作</th>
+                        <th width="8%">操作</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -513,16 +546,16 @@
     </div>
     
     <!-- 配置模态框 -->
-    <div id="configModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-        <div style="background-color: white; margin: 10% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="font-size: 20px; color: #2c3e50;"><i class="fas fa-cogs"></i> 高级配置</div>
-                <div style="font-size: 24px; cursor: pointer; color: #7f8c8d;" id="closeModal">&times;</div>
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-cogs"></i> 高级配置</div>
+                <div class="close-modal" id="closeModal">&times;</div>
             </div>
-            <div style="margin-bottom: 20px;">
+            <div class="modal-body">
                 <div style="margin-bottom: 15px;">
                     <label>API端点配置:</label>
-                    <input type="text" id="apiSubmit" class="form-control" placeholder="提交数据API端点" value="/api/records">
+                    <input type="text" id="apiSubmit" class="form-control" placeholder="提交数据API端点" value="/api/donations">
                     <small>用于提交数据的API路径</small>
                 </div>
                 <div style="margin-bottom: 15px;">
@@ -534,7 +567,7 @@
                     <input type="number" id="retryCount" class="form-control" placeholder="重试次数" value="3" min="0" max="10">
                 </div>
             </div>
-            <div style="text-align: right;">
+            <div class="modal-footer">
                 <button id="saveConfig" class="btn btn-success">保存配置</button>
                 <button id="cancelConfig" class="btn btn-secondary">取消</button>
             </div>
@@ -545,67 +578,20 @@
         // 汇率设置
         const EXCHANGE_RATE = 4.2;
         
-        // 中元超荐项目数据定义
-        const projectData = {
-            "副总功德主": {
-                method: "超荐消业共修(七天)-莲位-附 超荐莲位 贰座",
-                amount: "80000"
-            },
-            "大愿功德主": {
-                method: "超荐消业共修(七天)-莲位-附 超荐莲位 壹座",
-                amount: "50000"
-            },
-            "大悲功德主(历代祖先)": {
-                method: "超荐消业共修(七天)-莲位-历代祖先",
-                amount: "8000"
-            },
-            "大悲功德主(往生先亡)": {
-                method: "超荐消业共修(七天)-莲位-往生先亡",
-                amount: "6000"
-            },
-            "大悲功德主(个人冤亲债主)": {
-                method: "超荐消业共修(七天)-莲位-个人冤亲债主",
-                amount: "6000"
-            },
-            "大悲功德主(地基主)": {
-                method: "超荐消业共修(七天)-莲位-地基主",
-                amount: "6000"
-            },
-            "大悲功德主(有缘无份小孩)": {
-                method: "超荐消业共修(七天)-莲位-有缘无份小孩",
-                amount: "6000"
-            },
-            "大智功德主": {
-                method: "超荐消业共修(五天)-地基主",
-                amount: "1000"
-            },
-            "大行功德主": {
-                method: "超荐消业共修(五天)-有缘无份小孩",
-                amount: "1000"
-            },
-            "随喜超荐(历代祖先)": {
-                method: "超荐消业共修(三天)-历代祖先",
-                amount: "200"
-            },
-            "随喜超荐(往生先亡)": {
-                method: "超荐消业共修(三天)-往生先亡",
-                amount: "200"
-            },
-            "随喜超荐(个人冤亲债主)": {
-                method: "超荐消业共修(三天)-个人冤亲债主",
-                amount: "200"
-            }
+        // 自动识别当前页面地址作为API Base URL
+        const autoDetectServerUrl = () => {
+            return window.location.origin;
         };
-        
-        // 服务器配置
+
+        // 服务器配置（可从本地存储加载）
         let serverConfig = {
-            serverUrl: window.location.origin,
+            serverUrl: autoDetectServerUrl(),
             apiEndpoints: {
-                submit: '/api/records',
+                submit: '/api/donations',
                 test: '/api/test',
                 stats: '/api/stats'
             },
-            timeout: 30,
+            timeout: 30, // 秒
             retryCount: 3
         };
         
@@ -615,6 +601,42 @@
         
         // 操作日志
         let operationLogs = [];
+        
+        // 护持项目数据定义
+        const projectData = {
+            "供灯祈福(总功德主)": {
+                method: "1.供灯祈福共修 (七天)\n2.附 福慧灯 三盏\n3.附 常年光明灯 三盏",
+                amount: "300000"
+            },
+            "供灯祈福(副总功德主)": {
+                method: "1.供灯祈福共修 (七天)\n2.附 福慧灯 二盏\n3.附 常年光明灯 二盏",
+                amount: "80000"
+            },
+            "供灯祈福(圆满功德主)": {
+                method: "1.供灯祈福共修 (七天)\n2.附 福慧灯 一盏\n3.附 常年光明灯 一盏",
+                amount: "50000"
+            },
+            "供灯祈福(阖家福慧功德主)": {
+                method: "1.供灯祈福共修 (七天)\n2.附 常年光明灯 一盏",
+                amount: "8000"
+            },
+            "供灯祈福(个人福慧功德主)": {
+                method: "1.供灯祈福共修 (七天)\n2.附 常年光明灯 一盏",
+                amount: "6000"
+            },
+            "常年光明灯（阖家光明灯功德主）": {
+                method: "佛龛供灯一年",
+                amount: "1000"
+            },
+            "常年光明灯(个人光明灯功德主)": {
+                method: "佛龛供灯一年",
+                amount: "600"
+            },
+            "新春祈福单(随喜功德主)": {
+                method: "祈福共修 (三天)",
+                amount: "随喜"
+            }
+        };
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -627,32 +649,40 @@
         
         // 加载配置
         function loadConfig() {
-            const savedConfig = localStorage.getItem('zhongyuanServerConfig');
+            // 自动识别当前URL作为默认服务器地址
+            const detectedUrl = autoDetectServerUrl();
+            
+            const savedConfig = localStorage.getItem('donationServerConfig');
             if (savedConfig) {
                 try {
                     const parsedConfig = JSON.parse(savedConfig);
                     serverConfig = { ...serverConfig, ...parsedConfig };
-                    document.getElementById('serverUrl').value = serverConfig.serverUrl;
-                    document.getElementById('apiSubmit').value = serverConfig.apiEndpoints.submit || '/api/records';
-                    document.getElementById('timeout').value = serverConfig.timeout || 30;
-                    document.getElementById('retryCount').value = serverConfig.retryCount || 3;
-                    
                     addLog('配置已从本地存储加载', 'info');
                 } catch (e) {
                     addLog('加载配置时出错，使用默认配置', 'error');
+                    serverConfig.serverUrl = detectedUrl;
                 }
+            } else {
+                // 首次使用，自动设置为当前页面URL
+                serverConfig.serverUrl = detectedUrl;
             }
+            
+            // 更新输入框值
+            document.getElementById('serverUrl').value = serverConfig.serverUrl;
+            document.getElementById('apiSubmit').value = serverConfig.apiEndpoints.submit || '/api/donations';
+            document.getElementById('timeout').value = serverConfig.timeout || 30;
+            document.getElementById('retryCount').value = serverConfig.retryCount || 3;
         }
         
         // 保存配置
         function saveConfig() {
             serverConfig.serverUrl = document.getElementById('serverUrl').value.trim();
-            serverConfig.apiEndpoints.submit = document.getElementById('apiSubmit').value.trim() || '/api/records';
+            serverConfig.apiEndpoints.submit = document.getElementById('apiSubmit').value.trim() || '/api/donations';
             serverConfig.timeout = parseInt(document.getElementById('timeout').value) || 30;
             serverConfig.retryCount = parseInt(document.getElementById('retryCount').value) || 3;
             
             try {
-                localStorage.setItem('zhongyuanServerConfig', JSON.stringify(serverConfig));
+                localStorage.setItem('donationServerConfig', JSON.stringify(serverConfig));
                 addLog('配置已保存', 'success');
             } catch (e) {
                 addLog('保存配置时出错: ' + e.message, 'error');
@@ -672,7 +702,6 @@
             document.getElementById('exportCSV').addEventListener('click', exportToCSV);
             document.getElementById('loadData').addEventListener('click', loadFromLocalStorage);
             document.getElementById('clearAll').addEventListener('click', clearAllData);
-  
             
             // 新增服务器相关事件
             document.getElementById('testConnection').addEventListener('click', testServerConnection);
@@ -682,25 +711,7 @@
             document.getElementById('saveConfig').addEventListener('click', saveConfig);
             document.getElementById('closeModal').addEventListener('click', hideModal);
             document.getElementById('cancelConfig').addEventListener('click', hideModal);
-            document.getElementById('debugData').addEventListener('click', debugData);
-
-            function debugData() {
-              const allData = getAllData();
-              console.log('🔍 调试数据:', allData);
-              
-              // 显示数据详情
-              let debugInfo = `共 ${allData.length} 条数据\n\n`;
-              allData.forEach((item, index) => {
-                debugInfo += `数据 ${index + 1}:\n`;
-                debugInfo += `  姓名: ${item.name}\n`;
-                debugInfo += `  项目: ${item.project}\n`;
-                debugInfo += `  金额TWD: ${item.amountTWD} (类型: ${typeof item.amountTWD})\n`;
-                debugInfo += `  金额RMB: ${item.amountRMB} (类型: ${typeof item.amountRMB})\n`;
-                debugInfo += `  localId: ${item.localId}\n\n`;
-              });
-              
-              alert(debugInfo);
-            }
+            
             // 点击模态框外部关闭
             document.getElementById('configModal').addEventListener('click', function(e) {
                 if (e.target === this) hideModal();
@@ -757,11 +768,14 @@
             updateServerStatus('connecting', '连接中...');
             addLog(`正在连接到服务器: ${serverUrl}`, 'info');
             
+            // 创建AbortController用于超时控制
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
             
             try {
-                const response = await fetch(`${serverUrl}/health`, {
+                // 尝试连接根路径
+                const testUrl = `${serverUrl}`;
+                const response = await fetch(testUrl, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -770,29 +784,66 @@
                 });
                 
                 if (response.ok) {
-                    const data = await response.json();
                     serverConnected = true;
-                    updateServerStatus('connected', `已连接 (${data.status || '健康'})`);
+                    updateServerStatus('connected', '连接成功');
                     enableServerButtons();
                     addLog('服务器连接成功', 'success');
                     
+                    // 更新服务器信息
                     document.getElementById('connectionInfo').innerHTML = 
-                        `<i class="fas fa-check-circle"></i> 连接正常 | 服务器状态: ${data.status || '健康'}`;
+                        `<i class="fas fa-check-circle"></i> 连接正常 | 服务器地址: ${serverUrl}`;
                     
                     // 保存配置
-                    localStorage.setItem('zhongyuanServerConfig', JSON.stringify(serverConfig));
+                    localStorage.setItem('donationServerConfig', JSON.stringify(serverConfig));
                     
                 } else {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
             } catch (error) {
-                serverConnected = false;
-                updateServerStatus('disconnected', `连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`);
-                disableServerButtons();
-                addLog(`服务器连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
+                // 清除之前的超时计时器
+                clearTimeout(timeoutId);
                 
-                document.getElementById('connectionInfo').innerHTML = 
-                    `<i class="fas fa-times-circle"></i> 连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`;
+                // 如果根路径失败，尝试连接健康检查端点
+                const healthController = new AbortController();
+                const healthTimeoutId = setTimeout(() => healthController.abort(), (serverConfig.timeout || 30) * 1000);
+                
+                try {
+                    const healthUrl = `${serverUrl}/health`;
+                    const response = await fetch(healthUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        signal: healthController.signal
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        serverConnected = true;
+                        updateServerStatus('connected', `已连接 (${data.status || '健康'})`);
+                        enableServerButtons();
+                        addLog('服务器连接成功', 'success');
+                        
+                        document.getElementById('connectionInfo').innerHTML = 
+                            `<i class="fas fa-check-circle"></i> 连接正常 | 服务器状态: ${data.status || '健康'}`;
+                        
+                        // 保存配置
+                        localStorage.setItem('donationServerConfig', JSON.stringify(serverConfig));
+                        
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                } catch (secondError) {
+                    serverConnected = false;
+                    updateServerStatus('disconnected', `连接失败: ${secondError.name === 'AbortError' ? '请求超时' : secondError.message}`);
+                    disableServerButtons();
+                    addLog(`服务器连接失败: ${secondError.name === 'AbortError' ? '请求超时' : secondError.message}`, 'error');
+                    
+                    document.getElementById('connectionInfo').innerHTML = 
+                        `<i class="fas fa-times-circle"></i> 连接失败: ${secondError.name === 'AbortError' ? '请求超时' : secondError.message}`;
+                } finally {
+                    clearTimeout(healthTimeoutId);
+                }
             } finally {
                 clearTimeout(timeoutId);
             }
@@ -822,8 +873,8 @@
             document.getElementById('submitAll').disabled = true;
         }
         
-        // 同步数据到服务器
-        async function syncToServer() {
+        // 同步数据到服务器（只同步未提交的数据）
+              async function syncToServer() {
             if (!serverConnected) {
                 addLog('服务器未连接，无法同步', 'error');
                 return;
@@ -837,10 +888,12 @@
             syncInProgress = true;
             document.getElementById('syncData').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 同步中...';
             
+            // 创建AbortController用于超时控制
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
             
             try {
+                // 获取所有数据
                 const allData = getAllData();
                 if (allData.length === 0) {
                     addLog('没有需要同步的数据', 'info');
@@ -848,7 +901,10 @@
                     return;
                 }
                 
-                const submittedIds = JSON.parse(localStorage.getItem('submittedIds') || '[]');
+                // 获取已提交的数据ID（如果有）
+                const submittedIds = JSON.parse(localStorage.getItem('submittedIdsMobile') || '[]');
+                
+                // 筛选未提交的数据
                 const dataToSubmit = allData.filter(item => !submittedIds.includes(item.localId));
                 
                 if (dataToSubmit.length === 0) {
@@ -860,13 +916,16 @@
                 addLog(`准备提交 ${dataToSubmit.length} 条未同步数据`, 'info');
                 updateSyncDetails(`准备同步 ${dataToSubmit.length} 条数据...`);
                 
+                // 提交数据
                 const result = await submitDataToServer(dataToSubmit, controller);
                 
                 if (result && result.success) {
+                    // 更新已提交的ID
                     const newIds = dataToSubmit.map(item => item.localId);
                     const updatedSubmittedIds = [...submittedIds, ...newIds];
-                    localStorage.setItem('submittedIds', JSON.stringify(updatedSubmittedIds));
+                    localStorage.setItem('submittedIdsMobile', JSON.stringify(updatedSubmittedIds));
                     
+                    // 更新同步状态
                     updateSyncStatus(`${result.submittedCount || dataToSubmit.length}条数据已同步`);
                     updateSyncDetails(`成功同步 ${result.submittedCount || dataToSubmit.length} 条数据到服务器`, 'success');
                     addLog(`成功同步 ${result.submittedCount || dataToSubmit.length} 条数据到服务器`, 'success');
@@ -890,8 +949,8 @@
             }
         }
         
-        // 提交所有数据到服务器
-        async function submitAllToServer() {
+        // 提交所有数据到服务器（强制提交）
+               async function submitAllToServer() {
             if (!serverConnected) {
                 addLog('服务器未连接，无法提交', 'error');
                 return;
@@ -904,6 +963,7 @@
             syncInProgress = true;
             document.getElementById('submitAll').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
             
+            // 创建AbortController用于超时控制
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
             
@@ -918,11 +978,13 @@
                 addLog(`准备提交全部 ${allData.length} 条数据`, 'info');
                 updateSyncDetails(`准备提交 ${allData.length} 条数据...`);
                 
+                // 使用批量提交接口
                 const result = await submitBatchToServer(allData, controller);
                 
                 if (result && result.success) {
+                    // 清除本地已提交ID记录，重新记录
                     const submittedIds = allData.map(item => item.localId);
-                    localStorage.setItem('submittedIds', JSON.stringify(submittedIds));
+                    localStorage.setItem('submittedIdsMobile', JSON.stringify(submittedIds));
                     
                     updateSyncStatus(`已提交${result.submittedCount || allData.length}条数据`);
                     updateSyncDetails(`成功提交 ${result.submittedCount || allData.length} 条数据到服务器`, 'success');
@@ -943,17 +1005,18 @@
             } finally {
                 syncInProgress = false;
                 clearTimeout(timeoutId);
-                document.getElementById('submitAll').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> 提交所有数据到服务器';
+                document.getElementById('submitAll').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> 提交所有数据';
             }
         }
         
-        // 提交数据到服务器
-        async function submitDataToServer(data, controller) {
+        // 提交数据到服务器（单个或批量）
+       async function submitDataToServer(data, controller) {
             const serverUrl = serverConfig.serverUrl;
             const apiEndpoint = serverConfig.apiEndpoints.submit;
             const url = `${serverUrl}${apiEndpoint}`;
             
             try {
+                // 为每条数据生成唯一ID和时间戳
                 const dataWithMetadata = data.map(item => ({
                     ...item,
                     localId: item.localId || generateLocalId(),
@@ -980,7 +1043,8 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                return await response.json();
+                const result = await response.json();
+                return result;
                 
             } catch (error) {
                 // 重试逻辑
@@ -989,6 +1053,7 @@
                     try {
                         await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
                         
+                        // 创建新的AbortController用于重试
                         const retryController = new AbortController();
                         const retryTimeoutId = setTimeout(() => retryController.abort(), (serverConfig.timeout || 30) * 1000);
                         
@@ -1042,6 +1107,7 @@
                         name,
                         project,
                         method,
+                        amount,
                         content,
                         payment,
                         contact,
@@ -1071,6 +1137,7 @@
             if (match) {
                 return parseFloat(match[1].replace(/,/g, ''));
             }
+            // 如果没有人民币金额，尝试从新台币金额计算
             const twdMatch = amountStr.match(/NT\$\s*([\d,.]+)/);
             if (twdMatch) {
                 const twdAmount = parseInt(twdMatch[1].replace(/,/g, ''));
@@ -1121,7 +1188,7 @@
             detailsElement.className = `sync-status log-${type}`;
         }
         
-        // 初始化表格
+        // 初始化表格，添加第一行
         function initializeTable() {
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
@@ -1159,7 +1226,7 @@
                     <div class="rmb-display">-</div>
                 </td>
                 <td>
-                    <textarea class="form-control content-textarea" rows="3" placeholder="请输入超荐内容"></textarea>
+                    <textarea class="form-control content-textarea" rows="3" placeholder="请输入祈福内容"></textarea>
                 </td>
                 <td>
                     <select class="form-control payment-select">
@@ -1204,7 +1271,7 @@
             addLog(`添加了新行 (当前共${rowCount}行)`, 'info');
         }
         
-        // 更新行数据
+        // 更新行数据（根据选择的护持项目）
         function updateRowData(selectElement) {
             const row = selectElement.closest('tr');
             const project = selectElement.value;
@@ -1214,7 +1281,7 @@
                 const amountDisplay = row.querySelector('.amount-display');
                 const rmbDisplay = row.querySelector('.rmb-display');
                 
-                // 更新超荐方式
+                // 更新祈福方式
                 methodTextarea.value = projectData[project].method;
                 
                 // 更新金额显示
@@ -1226,7 +1293,7 @@
                     const amountRMB = amountTWD / EXCHANGE_RATE;
                     
                     amountDisplay.textContent = `NT$ ${amountTWD.toLocaleString()}`;
-                    rmbDisplay.textContent = `≈ ¥ ${amountRMB.toLocaleString('zh-CN', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+                    rmbDisplay.textContent = `≈ ¥ ${amountRMB.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
                 }
                 
                 addLog(`已选择项目: ${project}`, 'info');
@@ -1245,6 +1312,7 @@
             const row = buttonElement.closest('tr');
             const tableBody = document.getElementById('tableBody');
             
+            // 至少保留一行
             if (tableBody.children.length > 1) {
                 row.remove();
                 updateRowNumbers();
@@ -1274,6 +1342,7 @@
                 const projectSelect = row.querySelector('.project-select');
                 const nameInput = row.querySelector('.name-input');
                 
+                // 只统计有姓名和已选择项目的行
                 if (nameInput.value.trim() && projectSelect.value) {
                     totalRecords++;
                     
@@ -1286,7 +1355,7 @@
             
             document.getElementById('totalRecords').textContent = totalRecords;
             document.getElementById('totalAmountTWD').textContent = `NT$ ${totalAmountTWD.toLocaleString()}`;
-            document.getElementById('totalAmountRMB').textContent = `¥ ${(totalAmountTWD / EXCHANGE_RATE).toLocaleString('zh-CN', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+            document.getElementById('totalAmountRMB').textContent = `¥ ${(totalAmountTWD / EXCHANGE_RATE).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
         }
         
         // 保存数据到本地存储
@@ -1300,7 +1369,7 @@
             }
             
             try {
-                localStorage.setItem('zhongyuanData', JSON.stringify(tableData));
+                localStorage.setItem('donationData', JSON.stringify(tableData));
                 const msg = `成功保存 ${tableData.length} 条记录到本地存储！`;
                 alert(msg);
                 addLog(msg, 'success');
@@ -1313,7 +1382,7 @@
         
         // 从本地存储加载数据
         function loadFromLocalStorage() {
-            const savedData = localStorage.getItem('zhongyuanData');
+            const savedData = localStorage.getItem('donationData');
             
             if (!savedData) {
                 alert('本地存储中没有找到保存的数据！');
@@ -1329,8 +1398,10 @@
                 const tableData = JSON.parse(savedData);
                 const tableBody = document.getElementById('tableBody');
                 
+                // 清空当前表格
                 tableBody.innerHTML = '';
                 
+                // 加载保存的数据
                 tableData.forEach((item, index) => {
                     addNewRow();
                     const newRow = tableBody.lastElementChild;
@@ -1357,6 +1428,7 @@
             if (data.project) {
                 projectSelect.value = data.project;
                 
+                // 触发change事件以更新其他字段
                 const event = new Event('change');
                 projectSelect.dispatchEvent(event);
             }
@@ -1377,8 +1449,9 @@
             }
             
             try {
+                // 创建CSV内容
                 let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-                csvContent += "序号,姓名,护持项目,超荐方式,护持金额(新台币),护持金额(人民币),超荐内容,是否缴费,联系人,创建时间,本地ID\n";
+                csvContent += "序号,姓名,护持项目,祈福方式,护持金额(新台币),护持金额(人民币),祈福内容,是否缴费,联系人,创建时间,本地ID\n";
                 
                 tableData.forEach(item => {
                     const row = [
@@ -1397,13 +1470,15 @@
                     csvContent += row.join(',') + "\n";
                 });
                 
+                // 创建下载链接
                 const encodedUri = encodeURI(csvContent);
                 const link = document.createElement("a");
                 const timestamp = new Date().toISOString().slice(0,10).replace(/-/g, '');
                 link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `中元信息登记表_${timestamp}_${tableData.length}条.csv`);
+                link.setAttribute("download", `护持项目收集表_${timestamp}_${tableData.length}条.csv`);
                 document.body.appendChild(link);
                 
+                // 触发下载
                 link.click();
                 document.body.removeChild(link);
                 
@@ -1423,9 +1498,11 @@
                 return;
             }
             
-            localStorage.removeItem('zhongyuanData');
+            // 清空本地存储
+            localStorage.removeItem('donationData');
             localStorage.removeItem('submittedIds');
             
+            // 重置表格
             initializeTable();
             updateSummary();
             updateSyncStatus('未同步');
