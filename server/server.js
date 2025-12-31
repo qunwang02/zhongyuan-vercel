@@ -11,9 +11,6 @@ const database = require('./database');
 // 创建Express应用
 const app = express();
 
-// 重要：添加信任代理设置（放在所有中间件之前）
-app.set('trust proxy', 1); // 信任第一个代理
-
 // 安全中间件
 app.use(helmet({
   contentSecurityPolicy: {
@@ -62,12 +59,7 @@ app.get('/', (req, res) => {
 
 // 管理页面路由
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/mobile.html'));
-});
-
-// 移动端页面路由
-app.get('/mobile', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/mobile.html'));
+  res.sendFile(path.join(__dirname, '../public/admin.html'));
 });
 
 // 健康检查
@@ -97,11 +89,25 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 启动服务器
+// 数据库连接
+async function connectDatabase() {
+  try {
+    await database.connect();
+    console.log('✅ 数据库连接成功');
+  } catch (error) {
+    console.error('❌ 数据库连接失败:', error);
+    // 只在本地开发环境下退出进程，Vercel环境下返回错误即可
+    if (process.env.NODE_ENV === 'development' || !process.env.VERCEL) {
+      process.exit(1);
+    }
+  }
+}
+
+// 启动服务器（仅在本地开发环境）
 async function startServer() {
   try {
     // 连接数据库
-    await database.connect();
+    await connectDatabase();
     
     // 启动服务器
     const server = app.listen(config.server.port, () => {
@@ -109,10 +115,9 @@ async function startServer() {
       console.log(`📡 地址: http://localhost:${config.server.port}`);
       console.log(`📊 管理页面: http://localhost:${config.server.port}/admin`);
       console.log(`🔧 环境: ${config.server.env}`);
-      console.log(`🗄️ 数据库: ${config.mongodb.database}`);
     });
-    
-    // 优雅关闭
+
+     // 优雅关闭（仅在本地开发环境下）
     const gracefulShutdown = async () => {
       console.log('🛑 收到关闭信号，正在优雅关闭...');
       
@@ -132,16 +137,24 @@ async function startServer() {
       }, 10000);
     };
     
-    process.on('SIGTERM', gracefulShutdown);
-    process.on('SIGINT', gracefulShutdown);
+    // 只在本地开发环境下监听关闭信号
+    if (process.env.NODE_ENV === 'development' || !process.env.VERCEL) {
+      process.on('SIGTERM', gracefulShutdown);
+      process.on('SIGINT', gracefulShutdown);
+    }
     
   } catch (error) {
     console.error('❌ 启动服务器失败:', error);
-    process.exit(1);
+    // 只在本地开发环境下退出进程
+    if (process.env.NODE_ENV === 'development' || !process.env.VERCEL) {
+      process.exit(1);
+    }
   }
 }
 
-startServer();
+// 只在本地开发环境启动服务器
+if (process.env.NODE_ENV === 'development' || !process.env.VERCEL) {
+  startServer();
+}
 
-
-module.exports = config;
+module.exports = app;
