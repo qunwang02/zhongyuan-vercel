@@ -2,39 +2,41 @@
   "version": 2,
   "builds": [
     {
-      "src": "public/**",
-      "use": "@vercel/static"
+      "src": "index.js",
+      "use": "@vercel/node"
     },
     {
-      "src": "server/server.js",
-      "use": "@vercel/node"
+      "src": "public/**/*",
+      "use": "@vercel/static",
+      "config": {
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/server.js",
-      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      "dest": "index.js"
     },
     {
       "src": "/health",
-      "dest": "server/server.js",
-      "methods": ["GET"]
+      "dest": "index.js"
     },
     {
-      "src": "/admin",
-      "dest": "server/server.js",
-      "methods": ["GET"]
+      "src": "/(mobile|fosheng|admin)",
+      "dest": "public/$1.html"
+    },
+    {
+      "src": "/(.*\\.(html|js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
+      "dest": "public/$1"
     },
     {
       "src": "/",
-      "dest": "server/server.js",
-      "methods": ["GET"]
+      "dest": "public/index.html"
     },
     {
       "src": "/(.*)",
-      "dest": "public/$1",
-      "methods": ["GET"]
+      "dest": "index.js"
     }
   ],
   "env": {
