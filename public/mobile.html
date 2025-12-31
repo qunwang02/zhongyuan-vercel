@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>护持项目收集表 - 手机版</title>
+    <title>中元信息登记表 - 手机版</title>
     <style>
         * {
             box-sizing: border-box;
@@ -83,7 +83,11 @@
             margin-right: 8px;
         }
         
-        .instructions p {
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
             margin-bottom: 8px;
             color: #555;
         }
@@ -404,64 +408,6 @@
             font-size: 15px;
         }
         
-        /* 模态框 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .modal-title {
-            font-size: 18px;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-        
-        .close-modal {
-            font-size: 28px;
-            cursor: pointer;
-            color: #7f8c8d;
-            line-height: 1;
-        }
-        
-        .close-modal:hover, .close-modal:active {
-            color: #e74c3c;
-        }
-        
-        .modal-body {
-            margin-bottom: 20px;
-        }
-        
-        .modal-footer {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
         /* 日志面板 */
         .log-panel {
             background-color: #f8f9fa;
@@ -560,6 +506,20 @@
             line-height: 1.4;
         }
         
+        /* 调试按钮 */
+        .debug-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
         /* 响应式调整 */
         @media (min-width: 480px) {
             body {
@@ -632,13 +592,71 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            font-size: 28px;
+            cursor: pointer;
+            color: #7f8c8d;
+            line-height: 1;
+        }
+        
+        .close-modal:hover, .close-modal:active {
+            color: #e74c3c;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>护持项目收集表</h1>
+            <h1>中元信息登记表</h1>
             <p class="subtitle">手机专用版 - 竖向填写更方便</p>
             <p class="exchange-rate">汇率: 1人民币 ≈ 4.2新台币</p>
             <div id="serverStatus" class="server-status status-disconnected">
@@ -650,7 +668,7 @@
         <div class="config-panel" id="configPanel">
             <h3><i class="fas fa-cog"></i> 服务器设置</h3>
             <div class="config-input">
-                <input type="text" id="serverUrl" placeholder="服务器地址 (例如:https://donation-collection-system.onrender.com)">
+                <input type="text" id="serverUrl" placeholder="服务器地址" value="">
                 <div class="config-buttons">
                     <button id="testConnection" class="btn btn-warning">
                         <i class="fas fa-plug"></i> 测试连接
@@ -674,11 +692,13 @@
         
         <div class="instructions">
             <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
-            <p>1. 填写姓名并选择护持项目后，系统会自动填充对应的祈福方式和护持金额</p>
-            <p>2. 点击"+"按钮可以添加新行，点击"×"按钮可以删除当前行</p>
-            <p>3. 填写祈福内容后，可以保存数据到本地浏览器或提交到服务器</p>
-            <p>4. 新台币与人民币的汇率按4.2:1计算</p>
-            <p>5. 首次使用请配置服务器地址，然后点击"测试连接"</p>
+            <ol>
+                <li>填写姓名并选择护持项目后，系统会自动填充对应的超荐方式和护持金额</li>
+                <li>点击"+"按钮可以添加新行，点击"×"按钮可以删除当前行</li>
+                <li>填写超荐内容后，可以保存数据到本地浏览器或提交到服务器</li>
+                <li>新台币与人民币的汇率按4.2:1计算</li>
+                <li>首次使用请配置服务器地址，然后点击"测试连接"</li>
+            </ol>
         </div>
         
         <div class="actions">
@@ -691,6 +711,9 @@
             <button id="syncData" class="btn btn-info" disabled>
                 <i class="fas fa-sync-alt"></i> 同步到服务器
             </button>
+            <button id="debugData" class="btn btn-info">
+                <i class="fas fa-bug"></i> 调试数据
+            </button>
         </div>
         
         <!-- 竖向表单容器 -->
@@ -701,6 +724,9 @@
                 <p>暂无记录，点击上方"添加记录"按钮开始填写</p>
             </div>
         </div>
+        
+        <!-- 调试信息面板 -->
+        <div id="debugInfo" class="debug-info"></div>
         
         <div class="footer-actions">
             <button id="exportCSV" class="btn btn-secondary">
@@ -737,7 +763,7 @@
             <div class="modal-body">
                 <div style="margin-bottom: 18px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600;">API端点配置:</label>
-                    <input type="text" id="apiSubmit" class="form-input" placeholder="提交数据API端点" value="/api/donations">
+                    <input type="text" id="apiSubmit" class="form-input" placeholder="提交数据API端点" value="/api/records">
                     <div class="hint">用于提交数据的API路径</div>
                 </div>
                 <div style="margin-bottom: 18px;">
@@ -760,20 +786,67 @@
         // 汇率设置
         const EXCHANGE_RATE = 4.2;
         
-        // 自动识别当前页面地址作为API Base URL
-        const autoDetectServerUrl = () => {
-            return window.location.origin;
+        // 中元超荐项目数据定义
+        const projectData = {
+            "副总功德主": {
+                method: "超荐消业共修(七天)-莲位-附 超荐莲位 贰座",
+                amount: "80000"
+            },
+            "大愿功德主": {
+                method: "超荐消业共修(七天)-莲位-附 超荐莲位 壹座",
+                amount: "50000"
+            },
+            "大悲功德主(历代祖先)": {
+                method: "超荐消业共修(七天)-莲位-历代祖先",
+                amount: "8000"
+            },
+            "大悲功德主(往生先亡)": {
+                method: "超荐消业共修(七天)-莲位-往生先亡",
+                amount: "6000"
+            },
+            "大悲功德主(个人冤亲债主)": {
+                method: "超荐消业共修(七天)-莲位-个人冤亲债主",
+                amount: "6000"
+            },
+            "大悲功德主(地基主)": {
+                method: "超荐消业共修(七天)-莲位-地基主",
+                amount: "6000"
+            },
+            "大悲功德主(有缘无份小孩)": {
+                method: "超荐消业共修(七天)-莲位-有缘无份小孩",
+                amount: "6000"
+            },
+            "大智功德主": {
+                method: "超荐消业共修(五天)-地基主",
+                amount: "1000"
+            },
+            "大行功德主": {
+                method: "超荐消业共修(五天)-有缘无份小孩",
+                amount: "1000"
+            },
+            "随喜超荐(历代祖先)": {
+                method: "超荐消业共修(三天)-历代祖先",
+                amount: "200"
+            },
+            "随喜超荐(往生先亡)": {
+                method: "超荐消业共修(三天)-往生先亡",
+                amount: "200"
+            },
+            "随喜超荐(个人冤亲债主)": {
+                method: "超荐消业共修(三天)-个人冤亲债主",
+                amount: "200"
+            }
         };
-
-        // 服务器配置（可从本地存储加载）
+        
+        // 服务器配置
         let serverConfig = {
-            serverUrl: autoDetectServerUrl(),
+            serverUrl: window.location.origin,
             apiEndpoints: {
-                submit: '/api/donations',
+                submit: '/api/records',
                 test: '/api/test',
                 stats: '/api/stats'
             },
-            timeout: 30, // 秒
+            timeout: 30,
             retryCount: 3
         };
         
@@ -783,42 +856,6 @@
         
         // 操作日志
         let operationLogs = [];
-        
-        // 护持项目数据定义
-        const projectData = {
-            "供灯祈福(总功德主)": {
-                method: "1.供灯祈福共修 (七天)\n2.附 福慧灯 三盏\n3.附 常年光明灯 三盏",
-                amount: "300000"
-            },
-            "供灯祈福(副总功德主)": {
-                method: "1.供灯祈福共修 (七天)\n2.附 福慧灯 二盏\n3.附 常年光明灯 二盏",
-                amount: "80000"
-            },
-            "供灯祈福(圆满功德主)": {
-                method: "1.供灯祈福共修 (七天)\n2.附 福慧灯 一盏\n3.附 常年光明灯 一盏",
-                amount: "50000"
-            },
-            "供灯祈福(阖家福慧功德主)": {
-                method: "1.供灯祈福共修 (七天)\n2.附 常年光明灯 一盏",
-                amount: "8000"
-            },
-            "供灯祈福(个人福慧功德主)": {
-                method: "1.供灯祈福共修 (七天)\n2.附 常年光明灯 一盏",
-                amount: "6000"
-            },
-            "常年光明灯（阖家光明灯功德主）": {
-                method: "佛龛供灯一年",
-                amount: "1000"
-            },
-            "常年光明灯(个人光明灯功德主)": {
-                method: "佛龛供灯一年",
-                amount: "600"
-            },
-            "新春祈福单(随喜功德主)": {
-                method: "祈福共修 (三天)",
-                amount: "随喜"
-            }
-        };
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -834,7 +871,7 @@
         
         // 检查是否有保存的数据
         function checkSavedData() {
-            const savedData = localStorage.getItem('donationDataMobile');
+            const savedData = localStorage.getItem('zhongyuanDataMobile');
             if (savedData) {
                 try {
                     const data = JSON.parse(savedData);
@@ -849,40 +886,32 @@
         
         // 加载配置
         function loadConfig() {
-            // 自动识别当前URL作为默认服务器地址
-            const detectedUrl = autoDetectServerUrl();
-            
-            const savedConfig = localStorage.getItem('donationServerConfigMobile');
+            const savedConfig = localStorage.getItem('zhongyuanServerConfigMobile');
             if (savedConfig) {
                 try {
                     const parsedConfig = JSON.parse(savedConfig);
                     serverConfig = { ...serverConfig, ...parsedConfig };
+                    document.getElementById('serverUrl').value = serverConfig.serverUrl;
+                    document.getElementById('apiSubmit').value = serverConfig.apiEndpoints.submit || '/api/records';
+                    document.getElementById('timeout').value = serverConfig.timeout || 30;
+                    document.getElementById('retryCount').value = serverConfig.retryCount || 3;
+                    
                     addLog('配置已从本地存储加载', 'info');
                 } catch (e) {
                     addLog('加载配置时出错，使用默认配置', 'error');
-                    serverConfig.serverUrl = detectedUrl;
                 }
-            } else {
-                // 首次使用，自动设置为当前页面URL
-                serverConfig.serverUrl = detectedUrl;
             }
-            
-            // 更新输入框值
-            document.getElementById('serverUrl').value = serverConfig.serverUrl;
-            document.getElementById('apiSubmit').value = serverConfig.apiEndpoints.submit || '/api/donations';
-            document.getElementById('timeout').value = serverConfig.timeout || 30;
-            document.getElementById('retryCount').value = serverConfig.retryCount || 3;
         }
         
         // 保存配置
         function saveConfig() {
             serverConfig.serverUrl = document.getElementById('serverUrl').value.trim();
-            serverConfig.apiEndpoints.submit = document.getElementById('apiSubmit').value.trim() || '/api/donations';
+            serverConfig.apiEndpoints.submit = document.getElementById('apiSubmit').value.trim() || '/api/records';
             serverConfig.timeout = parseInt(document.getElementById('timeout').value) || 30;
             serverConfig.retryCount = parseInt(document.getElementById('retryCount').value) || 3;
             
             try {
-                localStorage.setItem('donationServerConfigMobile', JSON.stringify(serverConfig));
+                localStorage.setItem('zhongyuanServerConfigMobile', JSON.stringify(serverConfig));
                 addLog('配置已保存', 'success');
             } catch (e) {
                 addLog('保存配置时出错: ' + e.message, 'error');
@@ -902,6 +931,7 @@
             document.getElementById('exportCSV').addEventListener('click', exportToCSV);
             document.getElementById('loadData').addEventListener('click', loadFromLocalStorage);
             document.getElementById('clearAll').addEventListener('click', clearAllData);
+            document.getElementById('debugData').addEventListener('click', debugData);
             
             // 新增服务器相关事件
             document.getElementById('testConnection').addEventListener('click', testServerConnection);
@@ -979,14 +1009,11 @@
             updateServerStatus('connecting', '连接中...');
             addLog(`正在连接到服务器: ${serverUrl}`, 'info');
             
-            // 创建AbortController用于超时控制
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
             
             try {
-                // 尝试连接根路径
-                const testUrl = `${serverUrl}`;
-                const response = await fetch(testUrl, {
+                const response = await fetch(`${serverUrl}/health`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -995,66 +1022,29 @@
                 });
                 
                 if (response.ok) {
+                    const data = await response.json();
                     serverConnected = true;
-                    updateServerStatus('connected', '连接成功');
+                    updateServerStatus('connected', `已连接 (${data.status || '健康'})`);
                     enableServerButtons();
                     addLog('服务器连接成功', 'success');
                     
-                    // 更新服务器信息
                     document.getElementById('connectionInfo').innerHTML = 
-                        `<i class="fas fa-check-circle"></i> 连接正常 | 服务器地址: ${serverUrl}`;
+                        `<i class="fas fa-check-circle"></i> 连接正常 | 服务器状态: ${data.status || '健康'}`;
                     
                     // 保存配置
-                    localStorage.setItem('donationServerConfigMobile', JSON.stringify(serverConfig));
+                    localStorage.setItem('zhongyuanServerConfigMobile', JSON.stringify(serverConfig));
                     
                 } else {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
             } catch (error) {
-                // 清除之前的超时计时器
-                clearTimeout(timeoutId);
+                serverConnected = false;
+                updateServerStatus('disconnected', `连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`);
+                disableServerButtons();
+                addLog(`服务器连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`, 'error');
                 
-                // 如果根路径失败，尝试连接健康检查端点
-                const healthController = new AbortController();
-                const healthTimeoutId = setTimeout(() => healthController.abort(), (serverConfig.timeout || 30) * 1000);
-                
-                try {
-                    const healthUrl = `${serverUrl}/health`;
-                    const response = await fetch(healthUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        signal: healthController.signal
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        serverConnected = true;
-                        updateServerStatus('connected', `已连接 (${data.status || '健康'})`);
-                        enableServerButtons();
-                        addLog('服务器连接成功', 'success');
-                        
-                        document.getElementById('connectionInfo').innerHTML = 
-                            `<i class="fas fa-check-circle"></i> 连接正常 | 服务器状态: ${data.status || '健康'}`;
-                        
-                        // 保存配置
-                        localStorage.setItem('donationServerConfigMobile', JSON.stringify(serverConfig));
-                        
-                    } else {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                } catch (secondError) {
-                    serverConnected = false;
-                    updateServerStatus('disconnected', `连接失败: ${secondError.name === 'AbortError' ? '请求超时' : secondError.message}`);
-                    disableServerButtons();
-                    addLog(`服务器连接失败: ${secondError.name === 'AbortError' ? '请求超时' : secondError.message}`, 'error');
-                    
-                    document.getElementById('connectionInfo').innerHTML = 
-                        `<i class="fas fa-times-circle"></i> 连接失败: ${secondError.name === 'AbortError' ? '请求超时' : secondError.message}`;
-                } finally {
-                    clearTimeout(healthTimeoutId);
-                }
+                document.getElementById('connectionInfo').innerHTML = 
+                    `<i class="fas fa-times-circle"></i> 连接失败: ${error.name === 'AbortError' ? '请求超时' : error.message}`;
             } finally {
                 clearTimeout(timeoutId);
             }
@@ -1084,7 +1074,7 @@
             document.getElementById('submitAll').disabled = true;
         }
         
-        // 同步数据到服务器（只同步未提交的数据）
+        // 同步数据到服务器
         async function syncToServer() {
             if (!serverConnected) {
                 addLog('服务器未连接，无法同步', 'error');
@@ -1099,12 +1089,10 @@
             syncInProgress = true;
             document.getElementById('syncData').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 同步中...';
             
-            // 创建AbortController用于超时控制
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
             
             try {
-                // 获取所有数据
                 const allData = getAllData();
                 if (allData.length === 0) {
                     addLog('没有需要同步的数据', 'info');
@@ -1112,10 +1100,7 @@
                     return;
                 }
                 
-                // 获取已提交的数据ID（如果有）
                 const submittedIds = JSON.parse(localStorage.getItem('submittedIdsMobile') || '[]');
-                
-                // 筛选未提交的数据
                 const dataToSubmit = allData.filter(item => !submittedIds.includes(item.localId));
                 
                 if (dataToSubmit.length === 0) {
@@ -1127,16 +1112,13 @@
                 addLog(`准备提交 ${dataToSubmit.length} 条未同步数据`, 'info');
                 updateSyncDetails(`准备同步 ${dataToSubmit.length} 条数据...`);
                 
-                // 提交数据
                 const result = await submitDataToServer(dataToSubmit, controller);
                 
                 if (result && result.success) {
-                    // 更新已提交的ID
                     const newIds = dataToSubmit.map(item => item.localId);
                     const updatedSubmittedIds = [...submittedIds, ...newIds];
                     localStorage.setItem('submittedIdsMobile', JSON.stringify(updatedSubmittedIds));
                     
-                    // 更新同步状态
                     updateSyncStatus(`${result.submittedCount || dataToSubmit.length}条数据已同步`);
                     updateSyncDetails(`成功同步 ${result.submittedCount || dataToSubmit.length} 条数据到服务器`, 'success');
                     addLog(`成功同步 ${result.submittedCount || dataToSubmit.length} 条数据到服务器`, 'success');
@@ -1160,7 +1142,7 @@
             }
         }
         
-        // 提交所有数据到服务器（强制提交）
+        // 提交所有数据到服务器
         async function submitAllToServer() {
             if (!serverConnected) {
                 addLog('服务器未连接，无法提交', 'error');
@@ -1174,7 +1156,6 @@
             syncInProgress = true;
             document.getElementById('submitAll').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
             
-            // 创建AbortController用于超时控制
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), (serverConfig.timeout || 30) * 1000);
             
@@ -1189,11 +1170,9 @@
                 addLog(`准备提交全部 ${allData.length} 条数据`, 'info');
                 updateSyncDetails(`准备提交 ${allData.length} 条数据...`);
                 
-                // 使用批量提交接口
                 const result = await submitBatchToServer(allData, controller);
                 
                 if (result && result.success) {
-                    // 清除本地已提交ID记录，重新记录
                     const submittedIds = allData.map(item => item.localId);
                     localStorage.setItem('submittedIdsMobile', JSON.stringify(submittedIds));
                     
@@ -1220,14 +1199,13 @@
             }
         }
         
-        // 提交数据到服务器（单个或批量）
+        // 提交数据到服务器
         async function submitDataToServer(data, controller) {
             const serverUrl = serverConfig.serverUrl;
             const apiEndpoint = serverConfig.apiEndpoints.submit;
             const url = `${serverUrl}${apiEndpoint}`;
             
             try {
-                // 为每条数据生成唯一ID和时间戳
                 const dataWithMetadata = data.map(item => ({
                     ...item,
                     localId: item.localId || generateLocalId(),
@@ -1254,8 +1232,7 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                const result = await response.json();
-                return result;
+                return await response.json();
                 
             } catch (error) {
                 // 重试逻辑
@@ -1264,7 +1241,6 @@
                     try {
                         await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
                         
-                        // 创建新的AbortController用于重试
                         const retryController = new AbortController();
                         const retryTimeoutId = setTimeout(() => retryController.abort(), (serverConfig.timeout || 30) * 1000);
                         
@@ -1318,7 +1294,6 @@
                         name,
                         project,
                         method,
-                        amount,
                         content,
                         payment,
                         contact,
@@ -1348,7 +1323,6 @@
             if (match) {
                 return parseFloat(match[1].replace(/,/g, ''));
             }
-            // 如果没有人民币金额，尝试从新台币金额计算
             const twdMatch = amountStr.match(/NT\$\s*([\d,.]+)/);
             if (twdMatch) {
                 const twdAmount = parseInt(twdMatch[1].replace(/,/g, ''));
@@ -1389,6 +1363,41 @@
             detailsElement.className = `sync-status log-${type}`;
         }
         
+        // 调试数据
+        function debugData() {
+            const allData = getAllData();
+            console.log('🔍 调试数据:', allData);
+            
+            // 显示数据详情
+            let debugInfo = `<strong>共 ${allData.length} 条数据</strong><br><br>`;
+            if (allData.length === 0) {
+                debugInfo += "暂无数据";
+            } else {
+                allData.forEach((item, index) => {
+                    debugInfo += `<strong>数据 ${index + 1}:</strong><br>`;
+                    debugInfo += `姓名: ${item.name || '空'}<br>`;
+                    debugInfo += `项目: ${item.project || '空'}<br>`;
+                    debugInfo += `超荐方式: ${item.method ? item.method.substring(0, 50) + '...' : '空'}<br>`;
+                    debugInfo += `金额TWD: ${item.amountTWD || 0} (类型: ${typeof item.amountTWD})<br>`;
+                    debugInfo += `金额RMB: ${item.amountRMB ? item.amountRMB.toFixed(2) : 0} (类型: ${typeof item.amountRMB})<br>`;
+                    debugInfo += `localId: ${item.localId || '无'}<br>`;
+                    debugInfo += `缴费状态: ${item.payment || '未缴费'}<br>`;
+                    debugInfo += `联系人: ${item.contact || '空'}<br><br>`;
+                });
+            }
+            
+            const debugPanel = document.getElementById('debugInfo');
+            debugPanel.innerHTML = debugInfo;
+            debugPanel.style.display = 'block';
+            
+            // 10秒后自动隐藏
+            setTimeout(() => {
+                debugPanel.style.display = 'none';
+            }, 10000);
+            
+            addLog('已显示调试数据', 'info');
+        }
+        
         // 初始化表单
         function initializeForms() {
             const formContainer = document.getElementById('formContainer');
@@ -1400,7 +1409,7 @@
             // 添加第一个表单
             addNewForm();
             
-            addLog('手机版表单初始化完成', 'info');
+            addLog('手机版中元信息登记表初始化完成', 'info');
         }
         
         // 添加新表单
@@ -1441,7 +1450,7 @@
                     </select>
                 </div>
                 <div class="form-row">
-                    <label class="form-label">祈福方式</label>
+                    <label class="form-label">超荐方式</label>
                     <textarea class="form-input method-textarea" readonly></textarea>
                 </div>
                 <div class="form-row">
@@ -1450,8 +1459,8 @@
                     <div class="rmb-display">-</div>
                 </div>
                 <div class="form-row">
-                    <label class="form-label">祈福内容</label>
-                    <textarea class="form-input content-textarea" placeholder="请输入祈福内容"></textarea>
+                    <label class="form-label">超荐内容</label>
+                    <textarea class="form-input content-textarea" placeholder="请输入超荐内容"></textarea>
                 </div>
                 <div class="form-row">
                     <label class="form-label">是否缴费</label>
@@ -1512,7 +1521,7 @@
             });
         }
         
-        // 更新表单数据（根据选择的护持项目）
+        // 更新表单数据
         function updateFormData(selectElement) {
             const formCard = selectElement.closest('.form-card');
             const project = selectElement.value;
@@ -1522,7 +1531,7 @@
                 const amountDisplay = formCard.querySelector('.amount-display');
                 const rmbDisplay = formCard.querySelector('.rmb-display');
                 
-                // 更新祈福方式
+                // 更新超荐方式
                 methodTextarea.value = projectData[project].method;
                 
                 // 更新金额显示
@@ -1535,7 +1544,7 @@
                     
                     amountDisplay.textContent = `NT$ ${amountTWD.toLocaleString()}`;
                     if (rmbDisplay) {
-                        rmbDisplay.textContent = `≈ ¥ ${amountRMB.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+                        rmbDisplay.textContent = `≈ ¥ ${amountRMB.toLocaleString('zh-CN', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
                     }
                 }
                 
@@ -1594,7 +1603,7 @@
             
             document.getElementById('totalRecords').textContent = totalRecords;
             document.getElementById('totalAmountTWD').textContent = `NT$ ${totalAmountTWD.toLocaleString()}`;
-            document.getElementById('totalAmountRMB').textContent = `¥ ${(totalAmountTWD / EXCHANGE_RATE).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+            document.getElementById('totalAmountRMB').textContent = `¥ ${(totalAmountTWD / EXCHANGE_RATE).toLocaleString('zh-CN', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
             
             // 更新空状态显示
             const emptyState = document.getElementById('emptyState');
@@ -1619,7 +1628,7 @@
             }
             
             try {
-                localStorage.setItem('donationDataMobile', JSON.stringify(tableData));
+                localStorage.setItem('zhongyuanDataMobile', JSON.stringify(tableData));
                 const msg = `成功保存 ${tableData.length} 条记录到本地存储！`;
                 alert(msg);
                 addLog(msg, 'success');
@@ -1632,7 +1641,7 @@
         
         // 从本地存储加载数据
         function loadFromLocalStorage() {
-            const savedData = localStorage.getItem('donationDataMobile');
+            const savedData = localStorage.getItem('zhongyuanDataMobile');
             
             if (!savedData) {
                 alert('本地存储中没有找到保存的数据！');
@@ -1680,7 +1689,6 @@
             if (data.project) {
                 projectSelect.value = data.project;
                 
-                // 触发change事件以更新其他字段
                 const event = new Event('change');
                 projectSelect.dispatchEvent(event);
             }
@@ -1701,9 +1709,8 @@
             }
             
             try {
-                // 创建CSV内容
                 let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-                csvContent += "序号,姓名,护持项目,祈福方式,护持金额(新台币),护持金额(人民币),祈福内容,是否缴费,联系人,创建时间,本地ID\n";
+                csvContent += "序号,姓名,护持项目,超荐方式,护持金额(新台币),护持金额(人民币),超荐内容,是否缴费,联系人,创建时间,本地ID\n";
                 
                 tableData.forEach(item => {
                     const row = [
@@ -1722,15 +1729,13 @@
                     csvContent += row.join(',') + "\n";
                 });
                 
-                // 创建下载链接
                 const encodedUri = encodeURI(csvContent);
                 const link = document.createElement("a");
                 const timestamp = new Date().toISOString().slice(0,10).replace(/-/g, '');
                 link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `护持项目收集表_手机版_${timestamp}_${tableData.length}条.csv`);
+                link.setAttribute("download", `中元信息登记表_手机版_${timestamp}_${tableData.length}条.csv`);
                 document.body.appendChild(link);
                 
-                // 触发下载
                 link.click();
                 document.body.removeChild(link);
                 
@@ -1750,8 +1755,7 @@
                 return;
             }
             
-            // 清空本地存储
-            localStorage.removeItem('donationDataMobile');
+            localStorage.removeItem('zhongyuanDataMobile');
             localStorage.removeItem('submittedIdsMobile');
             
             // 重置表单
